@@ -1,0 +1,20 @@
+{
+  "name": "teddy/websockets",
+  "description": "Helps to use websockets",
+  "type": "library",
+  "license": ["MIT", "GPL-2.0", "GPL-3.0"],
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Tom Bartoň <grez.cz@gmail.com>"
+    }
+  ],
+  "require": {
+    "nette/di": "~2.3.0",
+    "cboden/ratchet": "^0.3.3",
+    "textalk/websocket": "^1.2"
+  },
+  "autoload": {
+    "classmap": ["src/"]
+  }
+}
