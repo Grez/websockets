@@ -30,14 +30,14 @@ class Controller implements MessageComponentInterface
 	 *
 	 * @var array
 	 */
-	protected $users;
+	protected $users = [];
 
 	/**
 	 * maps resourceId to UserId
 	 *
 	 * @var array
 	 */
-	protected $connections;
+	protected $connections = [];
 
 
 
