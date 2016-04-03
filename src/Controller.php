@@ -18,26 +18,26 @@ class Controller implements MessageComponentInterface
 	/**
 	 * @var \SplObjectStorage
 	 */
-	private $clients;
+	protected $clients;
 
 	/**
 	 * @var Container
 	 */
-	private $container;
+	protected $container;
 
 	/**
 	 * maps userIds to Connections (indexed by its resourceId)
 	 *
 	 * @var array
 	 */
-	private $users;
+	protected $users;
 
 	/**
 	 * maps resourceId to UserId
 	 *
 	 * @var array
 	 */
-	private $connections;
+	protected $connections;
 
 
 
