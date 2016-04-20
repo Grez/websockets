@@ -1,11 +1,12 @@
-# Publisher
-Extension, helps with using websockets 
+# Teddy\WebSockets
+Extension, helps with using WebSockets 
 
 ## Usage
 
 ``composer require teddy/websockets``
 
 Copy websockets.js file, override the `Controller`, add `/bin/server.php`
+Run `/bin/server.php`
 
 ```php
 use Ratchet\Server\IoServer;
