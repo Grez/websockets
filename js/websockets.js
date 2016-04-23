@@ -19,7 +19,8 @@
 
 		makeConnection: function () {
 			var self = this;
-			self.conn = new WebSocket('ws://localhost:8080');
+			var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+			self.conn = new WebSocket(protocol + '://localhost:8080');
 			self.attempt++;
 
 			self.conn.onopen = function(e) {
@@ -48,6 +49,9 @@
 				}, self.intervals[self.attempt] * 1000);
 			};
 
+			/**
+			 * Example method, used in Teddy/Skeleton
+			 */
 			self.conn.onmessage = function(e) {
 				var msg = JSON.parse(e.data);
 				if (msg.component === 'pm') {
