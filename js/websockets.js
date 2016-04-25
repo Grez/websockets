@@ -19,8 +19,7 @@
 
 		makeConnection: function () {
 			var self = this;
-			var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-			self.conn = new WebSocket(protocol + '://localhost:8080');
+			self.conn = new WebSocket(self.getServerUrl());
 			self.attempt++;
 
 			self.conn.onopen = function(e) {
@@ -58,6 +57,14 @@
 					events.updateUnreadMessages(msg.data);
 				}
 			};
+		},
+
+		// we need to pass the request on subdomain, check README.md
+		getServerUrl: function () {
+			var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+			var host = window.location.hostname;
+			host = host.substring(0, 4) === 'www.' ? host.substring(4) : host;
+			return protocol + '://wss.' + host;
 		},
 
 		msg: function (method, msg) {

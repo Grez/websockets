@@ -42,3 +42,6 @@ $server = IoServer::factory(
 
 $server->run();
 ```
+
+It is neccessary to create subdomain `wss.domain.tld`, becase SSL won't work otherwise.
+http://grezcz.tumblr.com/post/143320629816/rozchozen%C3%AD-ratchetu-na-ssl (check whether it won't break HTTP o_O)
