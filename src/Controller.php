@@ -13,7 +13,8 @@ class Controller implements MessageComponentInterface
 
 	const METHOD_AUTHORIZE = 'authorize';
 	const METHOD_NOTIFY_USERS = 'notifyUsers';
-	const METHOD_BROADCAST = 'broadcast';
+	const METHOD_EVERYONE_INCLUDING_ME = 'everyoneIncludingMe';
+	const METHOD_EVERYONE_EXCLUDING_ME = 'everyoneExcludingMe';
 
 	/**
 	 * @var \SplObjectStorage
@@ -39,6 +40,13 @@ class Controller implements MessageComponentInterface
 	 */
 	protected $connections = [];
 
+	/**
+	 * Names of allowed methods (implemented elsewhere)
+	 *
+	 * @var string[]
+	 */
+	protected $customMethods = [];
+
 
 
 	public function __construct(Container $container)
@@ -61,6 +69,7 @@ class Controller implements MessageComponentInterface
 
 
 	/**
+	 * @param ConnectionInterface $from
 	 * @param int $userId
 	 * @param string $apiKey
 	 * @return bool
@@ -72,13 +81,15 @@ class Controller implements MessageComponentInterface
 	}
 
 
+
 	/**
 	 * Sends message to user (all his connections)
 	 *
+	 * @param ConnectionInterface $from
 	 * @param int $userId
 	 * @param array $msg
 	 */
-	protected function sendMsgToUser($userId, $msg)
+	protected function sendMsgToUser(ConnectionInterface $from, $userId, $msg)
 	{
 		/** @var ConnectionInterface $conn */
 		foreach ($this->users[$userId] as $conn) {
@@ -117,33 +128,58 @@ class Controller implements MessageComponentInterface
 				echo 'Authorized connection #' . $from->resourceId . ' user #' . $data->userId . "\n";
 				break;
 
-			case self::METHOD_BROADCAST:
-				echo 'Broadcasting from #' . $from->resourceId . "\n";
-				$this->broadcast($from, $data);
-				break;
-
 			case self::METHOD_NOTIFY_USERS:
 				echo 'Notifying from #' . $from->resourceId . "\n";
 				foreach ($msg->users as $userId) {
 					echo 'Notifying user #' . $userId . ' from #' . $from->resourceId . "\n";
-					$this->sendMsgToUser($userId, $data);
+					$this->sendMsgToUser($from, $userId, $data);
 				}
 				break;
 
-			default:
-				echo 'Unknown method ' . $method . ' from #' . $from->resourceId . "\n";
+			case self::METHOD_EVERYONE_INCLUDING_ME:
+				echo 'Sending to everyone including me from #' . $from->resourceId . "\n";
+				$this->sendToEveryoneIncludingMe($from, $data);
 				break;
+
+			case self::METHOD_EVERYONE_EXCLUDING_ME:
+				echo 'Sending to everyone excluding me from #' . $from->resourceId . "\n";
+				$this->sendToEveryoneExcludingMe($from, $data);
+				break;
+
+			default:
+				if (in_array($method, $this->customMethods, TRUE)) {
+					$this->$method($from, $data);
+
+				} else {
+					echo 'Unknown method ' . $method . ' from #' . $from->resourceId . "\n";
+				}
 		}
 	}
 
 
+
 	/**
-	 * Sends message to all users
+	 * Sends message to all users (including sender)
 	 *
 	 * @param ConnectionInterface $from
 	 * @param string $msg
 	 */
-	protected function broadcast(ConnectionInterface $from, $msg)
+	protected function sendToEveryoneIncludingMe(ConnectionInterface $from, $msg)
+	{
+		foreach ($this->clients as $client) {
+			$client->send($msg);
+		}
+	}
+
+
+
+	/**
+	 * Sends message to all users (except sender)
+	 *
+	 * @param ConnectionInterface $from
+	 * @param string $msg
+	 */
+	protected function sendToEveryoneExcludingMe(ConnectionInterface $from, $msg)
 	{
 		foreach ($this->clients as $client) {
 			if ($from !== $client) {
@@ -191,6 +227,7 @@ class Controller implements MessageComponentInterface
 	}
 
 
+
 	/**
 	 * @param ConnectionInterface $conn
 	 * @return bool
@@ -201,6 +238,7 @@ class Controller implements MessageComponentInterface
 	}
 
 
+
 	/**
 	 * @param ConnectionInterface $conn
 	 * @return int
@@ -209,6 +247,7 @@ class Controller implements MessageComponentInterface
 	{
 		return $this->connections[$conn->resourceId];
 	}
+
 
 
 	/**
