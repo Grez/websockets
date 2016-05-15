@@ -64,7 +64,7 @@
 			var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 			var host = window.location.hostname;
 			host = host.substring(0, 4) === 'www.' ? host.substring(4) : host;
-			return protocol + '://wss.' + host;
+			return protocol + '://ws.' + host;
 		},
 
 		msg: function (method, msg) {
